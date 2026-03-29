@@ -9,15 +9,13 @@ const nextConfig = (phase: string): NextConfig => {
     };
   }
 
-  const isGithubPages = process.env.GITHUB_PAGES === 'true';
-
-  if (isGithubPages) {
+  if (process.env.GITHUB_PAGES) {
     // Config for GitHub Pages build
     const repoName = '/blogs.rajivnayanc.com';
     return {
       output: 'export',
+      distDir: 'build',
       basePath: repoName,
-      assetPrefix: repoName, // Also recommended for static assets
       images: {
         unoptimized: true, // Required for static export
       },
