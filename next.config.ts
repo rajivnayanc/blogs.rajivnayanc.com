@@ -16,7 +16,6 @@ const nextConfig = (phase: string): NextConfig => {
       output: 'export',
       distDir: 'build',
       basePath: repoName,
-      assetPrefix: repoName, // Also recommended for static assets
       images: {
         unoptimized: true, // Required for static export
       },
