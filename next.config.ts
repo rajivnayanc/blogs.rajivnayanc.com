@@ -5,7 +5,6 @@ const nextConfig = (phase: string): NextConfig => {
   if (phase === PHASE_DEVELOPMENT_SERVER) {
     // Config for development server
     return {
-      distDir: 'build',
       // No basePath needed for local development
     };
   }
