@@ -9,9 +9,7 @@ const nextConfig = (phase: string): NextConfig => {
     };
   }
 
-  const isGithubPages = process.env.GITHUB_PAGES === 'true';
-
-  if (isGithubPages) {
+  if (process.env.GITHUB_PAGES) {
     // Config for GitHub Pages build
     const repoName = '/blogs.rajivnayanc.com';
     return {
