@@ -5,6 +5,7 @@ const nextConfig = (phase: string): NextConfig => {
   if (phase === PHASE_DEVELOPMENT_SERVER) {
     // Config for development server
     return {
+      distDir: 'build',
       // No basePath needed for local development
     };
   }
@@ -16,6 +17,7 @@ const nextConfig = (phase: string): NextConfig => {
     const repoName = '/blogs.rajivnayanc.com';
     return {
       output: 'export',
+      distDir: 'build',
       basePath: repoName,
       assetPrefix: repoName, // Also recommended for static assets
       images: {
