@@ -1,32 +1,41 @@
-import type { NextConfig } from 'next';
-import { PHASE_DEVELOPMENT_SERVER } from 'next/constants';
+import type { NextConfig } from "next";
+import { PHASE_DEVELOPMENT_SERVER } from "next/constants";
 
 const nextConfig = (phase: string): NextConfig => {
-  if (phase === PHASE_DEVELOPMENT_SERVER) {
-    // Config for development server
+  const isDev = phase === PHASE_DEVELOPMENT_SERVER;
+
+  // In development, enable additional page extensions for dev-only routes
+  const pageExtensions = isDev
+    ? ["ts", "tsx", "md", "mdx", "dev.ts", "dev.tsx"]
+    : ["ts", "tsx", "md", "mdx"];
+
+  const common: NextConfig = {
+    pageExtensions,
+    images: {
+      unoptimized: true, // Required for static export
+    },
+  };
+
+  if (isDev) {
     return {
-      // No basePath needed for local development
+      ...common,
     };
   }
 
   if (process.env.GITHUB_PAGES) {
-    // Config for GitHub Pages build
-    const repoName = '/blogs.rajivnayanc.com';
     return {
-      output: 'export',
-      distDir: 'build',
-      basePath: repoName,
-      images: {
-        unoptimized: true, // Required for static export
-      },
+      ...common,
+      output: "export",
+      distDir: "build",
+      basePath: "/blogs.rajivnayanc.com",
     };
   }
 
-  // Config for regular production build (not GitHub Pages)
+  // Standard production build
   return {
-    output: 'export',
-    distDir: 'build',
-    // No basePath needed for standard production deployment
+    ...common,
+    output: "export",
+    distDir: "build",
   };
 };
 
