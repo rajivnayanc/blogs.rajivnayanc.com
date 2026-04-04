@@ -1,6 +1,6 @@
 1:"$Sreact.fragment"
 2:I[80492,["/blogs.rajivnayanc.com/_next/static/chunks/0_nj5pd9f5hkc.js","/blogs.rajivnayanc.com/_next/static/chunks/0d3shmwh5_nmn.js"],"ThemeProvider"]
-3:I[22016,["/blogs.rajivnayanc.com/_next/static/chunks/0_nj5pd9f5hkc.js","/blogs.rajivnayanc.com/_next/static/chunks/0d3shmwh5_nmn.js"],""]
+3:I[22016,["/blogs.rajivnayanc.com/_next/static/chunks/0_nj5pd9f5hkc.js","/blogs.rajivnayanc.com/_next/static/chunks/0d3shmwh5_nmn.js","/blogs.rajivnayanc.com/_next/static/chunks/0ql.16.d66kcy.js"],""]
 4:I[2317,["/blogs.rajivnayanc.com/_next/static/chunks/0_nj5pd9f5hkc.js","/blogs.rajivnayanc.com/_next/static/chunks/0d3shmwh5_nmn.js"],"ThemeSwitcher"]
 5:I[39756,["/blogs.rajivnayanc.com/_next/static/chunks/0_nj5pd9f5hkc.js","/blogs.rajivnayanc.com/_next/static/chunks/0d3shmwh5_nmn.js"],"default"]
 6:I[37457,["/blogs.rajivnayanc.com/_next/static/chunks/0_nj5pd9f5hkc.js","/blogs.rajivnayanc.com/_next/static/chunks/0d3shmwh5_nmn.js"],"default"]

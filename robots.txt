@@ -1,0 +1,16 @@
+User-Agent: *
+Allow: /
+Disallow: /api/
+Disallow: /(dev)/
+
+User-Agent: GPTBot
+Allow: /
+
+User-Agent: Google-Extended
+Allow: /
+
+User-Agent: anthropic-ai
+Allow: /
+
+Host: https://blogs.rajivnayanc.com
+Sitemap: https://blogs.rajivnayanc.com/sitemap.xml
