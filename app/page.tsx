@@ -1,31 +1,52 @@
-import React from 'react';
-import { FaLinkedin, FaGlobe, FaXTwitter } from 'react-icons/fa6';
+import Link from "next/link";
+import { getAllPostsMeta } from "@/lib/mdx";
+import { PostCard } from "@/components/blog/PostCard";
+import { Button } from "@/components/ui/Button";
+import { WebsiteJsonLd } from "@/components/seo/JsonLd";
+import { siteConfig } from "@/config/site";
+import styles from "./page.module.css";
 
+export default function HomePage() {
+  const posts = getAllPostsMeta().slice(0, 6);
 
-const ComingSoonPage = () => {
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white">
-      <h1 className="text-5xl font-bold mb-4">Coming Soon</h1>
-      <p className="text-xl mb-8">My new blog is on its way.</p>
-      <div className="text-center">
-        <p className="text-lg">In the meantime, you can find me here:</p>
-        <div className="flex justify-center space-x-4 mt-4">
-          <a href="https://www.linkedin.com/in/rajivnayanc" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300">
-            <FaLinkedin className="h-6 w-6" />
-          </a>
-          <a href="https://rajivnayanc.com" target="_blank" rel="noopener noreferrer" className="text-green-400 hover:text-green-300">
-            <FaGlobe className="h-6 w-6" />
-          </a>
-          <a href="https://x.com/rajivnayanc" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-gray-300">
-            <FaXTwitter className="h-6 w-6" />
-          </a>
-        </div>
-        <p className="mt-8 text-sm text-gray-500">
-          - Rajiv Nayan Choubey -
-        </p>
-      </div>
-    </div>
-  );
-};
+    <>
+      <WebsiteJsonLd />
 
-export default ComingSoonPage;
+      {/* Hero Section */}
+      <section className={styles.hero}>
+        <div className={styles.heroContent}>
+          <h1 className={styles.heroTitle}>
+            Hi, I&apos;m{" "}
+            <span className={styles.heroHighlight}>
+              {siteConfig.author.name.split(" ")[0]}
+            </span>
+          </h1>
+          <p className={styles.heroDescription}>{siteConfig.author.bio}</p>
+          <div className={styles.heroLinks}>
+            <Button href="/blog" size="lg">
+              Read the Blog →
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* Latest Posts */}
+      {posts.length > 0 && (
+        <section className={styles.postsSection}>
+          <div className={styles.sectionHeader}>
+            <h2 className={styles.sectionTitle}>Latest Posts</h2>
+            <Button href="/blog" variant="link">
+              View all →
+            </Button>
+          </div>
+          <div className={styles.postsGrid}>
+            {posts.map((post) => (
+              <PostCard key={post.slug} post={post} />
+            ))}
+          </div>
+        </section>
+      )}
+    </>
+  );
+}

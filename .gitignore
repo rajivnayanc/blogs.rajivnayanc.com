@@ -10,6 +10,8 @@
 !.yarn/releases
 !.yarn/versions
 
+.vscode/
+
 # testing
 /coverage
 
@@ -29,6 +31,10 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
+
+# drafts (local only)
+/drafts
+/public/images/drafts
 
 # env files (can opt-in for committing if needed)
 .env*

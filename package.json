@@ -7,13 +7,21 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "post": "node scripts/new-post.js"
   },
   "dependencies": {
+    "gray-matter": "^4.0.3",
     "next": "16.2.1",
+    "next-mdx-remote": "^6.0.0",
+    "next-themes": "^0.4.6",
     "react": "19.2.4",
     "react-dom": "19.2.4",
-    "react-icons": "^5.6.0"
+    "react-icons": "^5.6.0",
+    "reading-time": "^1.5.0",
+    "rehype-pretty-code": "^0.14.3",
+    "remark-gfm": "^4.0.1",
+    "shiki": "^4.0.2"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
