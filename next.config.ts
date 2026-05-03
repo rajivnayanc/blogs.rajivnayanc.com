@@ -23,11 +23,15 @@ const nextConfig = (phase: string): NextConfig => {
   }
 
   if (process.env.GITHUB_PAGES) {
+    const basePath = "/blogs.rajivnayanc.com";
     return {
       ...common,
       output: "export",
       distDir: "build",
-      basePath: "/blogs.rajivnayanc.com",
+      basePath,
+      env: {
+        NEXT_PUBLIC_BASE_PATH: basePath,
+      },
     };
   }
 

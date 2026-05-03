@@ -5,7 +5,7 @@ import remarkGfm from "remark-gfm";
 import { getDraftBySlug, getSeriesById, getPostsInSeries } from "@/lib/mdx";
 import { getMDXComponents } from "@/components/mdx/MDXComponents";
 import { SeriesCard } from "@/components/blog/SeriesCard";
-import { formatDate } from "@/lib/utils";
+import { formatDate, withBasePath } from "@/lib/utils";
 import styles from "@/app/blog/[slug]/page.module.css";
 import type { Metadata } from "next";
 
@@ -75,7 +75,7 @@ export default async function DraftPreviewPage({ params }: PreviewPageProps) {
         {frontmatter.image && (
           <div className={styles.coverImage}>
             <img
-              src={frontmatter.image}
+              src={withBasePath(frontmatter.image)}
               alt={frontmatter.title}
               loading="eager"
             />

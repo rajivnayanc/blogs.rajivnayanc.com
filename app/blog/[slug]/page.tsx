@@ -8,7 +8,7 @@ import { getMDXComponents } from "@/components/mdx/MDXComponents";
 import { ArticleJsonLd } from "@/components/seo/JsonLd";
 import { RelatedPosts } from "@/components/blog/RelatedPosts";
 import { SeriesCard } from "@/components/blog/SeriesCard";
-import { formatDate } from "@/lib/utils";
+import { formatDate, withBasePath } from "@/lib/utils";
 import { siteConfig } from "@/config/site";
 import { constructMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
@@ -96,7 +96,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         {frontmatter.image && (
           <div className={styles.coverImage}>
             <img
-              src={frontmatter.image}
+              src={withBasePath(frontmatter.image)}
               alt={frontmatter.title}
               loading="eager"
             />

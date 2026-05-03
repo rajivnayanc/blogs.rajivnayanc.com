@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { formatDate } from "@/lib/utils";
+import { formatDate, withBasePath } from "@/lib/utils";
 import type { PostMeta } from "@/types/post";
 import styles from "./PostCard.module.css";
 
@@ -16,7 +16,7 @@ export function PostCard({ post }: PostCardProps) {
         {frontmatter.image && (
           <div className={styles.imageWrapper}>
             <img
-              src={frontmatter.image}
+              src={withBasePath(frontmatter.image)}
               alt={frontmatter.title}
               className={styles.image}
               loading="lazy"
