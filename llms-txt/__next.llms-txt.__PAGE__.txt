@@ -19,5 +19,5 @@ Topics: Software Engineering, AI, System Design, Personal Achievements, Tech
 - Website: https://rajivnayanc.com
 - LinkedIn: https://www.linkedin.com/in/rajivnayanc
 - Twitter: https://x.com/rajivnayanc
-- GitHub: https://github.com/rajivnayanc0:{"rsc":["$","$1","c",{"children":[["$","pre",null,{"style":{"whiteSpace":"pre-wrap","fontFamily":"var(--font-mono)","padding":"2rem","maxWidth":"var(--content-width)","margin":"0 auto"},"children":"$2"}],null,["$","$L3",null,{"children":["$","$4",null,{"name":"Next.MetadataOutlet","children":"$@5"}]}]]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"xExqxoydu6GMMwchWHkf0"}
+- GitHub: https://github.com/rajivnayanc0:{"rsc":["$","$1","c",{"children":[["$","pre",null,{"style":{"whiteSpace":"pre-wrap","fontFamily":"var(--font-mono)","padding":"2rem","maxWidth":"var(--content-width)","margin":"0 auto"},"children":"$2"}],null,["$","$L3",null,{"children":["$","$4",null,{"name":"Next.MetadataOutlet","children":"$@5"}]}]]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"GtLdhPTI-UM5fdE5b5v-q"}
 5:null
