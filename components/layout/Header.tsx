@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
+import logo from "@/app/logo.svg";
 import { siteConfig } from "@/config/site";
 import { ThemeSwitcher } from "@/components/ui/ThemeSwitcher";
 import { Button } from "@/components/ui/Button";
@@ -46,7 +47,7 @@ export function Header() {
         {/* Logo — always visible on left */}
         <Link href="/" className={styles.logoLink} aria-label="Home">
           <Image
-            src="/logo.svg"
+            src={logo}
             alt={`${siteConfig.name} logo`}
             width={36}
             height={36}
