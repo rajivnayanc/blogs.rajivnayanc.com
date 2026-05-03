@@ -10,6 +10,7 @@ import { RelatedPosts } from "@/components/blog/RelatedPosts";
 import { SeriesCard } from "@/components/blog/SeriesCard";
 import { formatDate } from "@/lib/utils";
 import { siteConfig } from "@/config/site";
+import { constructMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
 import styles from "./page.module.css";
 
@@ -36,26 +37,16 @@ export async function generateMetadata({
   if (!post) return {};
 
   const { frontmatter } = post;
-  return {
+  return constructMetadata({
     title: frontmatter.title,
     description: frontmatter.description,
-    keywords: frontmatter.tags,
-    openGraph: {
-      title: frontmatter.title,
-      description: frontmatter.description,
-      type: "article",
-      publishedTime: frontmatter.date,
-      authors: [frontmatter.author || siteConfig.author.name],
-      tags: frontmatter.tags,
-      images: frontmatter.image ? [frontmatter.image] : [],
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: frontmatter.title,
-      description: frontmatter.description,
-      images: frontmatter.image ? [frontmatter.image] : [],
-    },
-  };
+    image: frontmatter.image,
+    url: `/blog/${slug}`,
+    type: "article",
+    publishedTime: frontmatter.date,
+    authors: [frontmatter.author || siteConfig.author.name],
+    tags: frontmatter.tags,
+  });
 }
 
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
