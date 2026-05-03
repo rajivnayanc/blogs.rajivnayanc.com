@@ -7,6 +7,7 @@
 
 import type { MDXComponents } from "mdx/types";
 import { Pre } from "./Pre";
+import { withBasePath } from "@/lib/utils";
 
 export function getMDXComponents(): MDXComponents {
   return {
@@ -28,7 +29,12 @@ export function getMDXComponents(): MDXComponents {
     ),
     img: (props) => (
       // eslint-disable-next-line @next/next/no-img-element
-      <img {...props} alt={props.alt || ""} loading="lazy" />
+      <img
+        {...props}
+        src={props.src ? withBasePath(props.src) : undefined}
+        alt={props.alt || ""}
+        loading="lazy"
+      />
     ),
     // Callout / Admonition component for tips, warnings, etc.
     Callout: ({
