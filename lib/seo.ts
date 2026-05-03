@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import { siteConfig } from "@/config/site";
+import { withBasePath } from "./utils";
 
 interface ConstructMetadataProps {
   title?: string;
@@ -41,7 +42,7 @@ export function constructMetadata({
       type,
       images: [
         {
-          url: image,
+          url: withBasePath(image),
           alt: title,
         },
       ],
@@ -54,7 +55,7 @@ export function constructMetadata({
       title,
       description,
       creator: siteConfig.author.handle,
-      images: [image],
+      images: [withBasePath(image)],
     },
     robots: {
       index: true,
@@ -68,7 +69,7 @@ export function constructMetadata({
       },
     },
     other: {
-      "og:logo": siteConfig.logo,
+      "og:logo": withBasePath(siteConfig.logo),
     },
   };
 }
