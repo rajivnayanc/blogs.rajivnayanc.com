@@ -1,5 +1,23 @@
 1:"$Sreact.fragment"
-2:I[97367,["/blogs.rajivnayanc.com/_next/static/chunks/1497-_qlhtunm.js","/blogs.rajivnayanc.com/_next/static/chunks/0d3shmwh5_nmn.js"],"OutletBoundary"]
-3:"$Sreact.suspense"
-0:{"rsc":["$","$1","c",{"children":[["$","pre",null,{"style":{"whiteSpace":"pre-wrap","fontFamily":"var(--font-mono)","padding":"2rem","maxWidth":"var(--content-width)","margin":"0 auto"},"children":"# Rajiv's Blog\n\n> Software engineering, AI, system design, personal achievements, and everything tech — by Rajiv Nayan Choubey.\n\n## About\nAuthor: Rajiv Nayan Choubey\nWebsite: https://blogs.rajivnayanc.com\nTopics: Software Engineering, AI, System Design, Personal Achievements, Tech\n\n## Blog Posts\n\n- [Hello World: Building This Blog](https://blogs.rajivnayanc.com/blog/hello-world): A deep dive into how I built this blog using Next.js, MDX, and a custom design system with light/dark theme support.\n\n## Links\n- Website: https://rajivnayanc.com\n- LinkedIn: https://www.linkedin.com/in/rajivnayanc\n- Twitter: https://x.com/rajivnayanc\n- GitHub: https://github.com/rajivnayanc"}],null,["$","$L2",null,{"children":["$","$3",null,{"name":"Next.MetadataOutlet","children":"$@4"}]}]]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"kObTvPsYQRaZwjF341Rcv"}
-4:null
+3:I[97367,["/blogs.rajivnayanc.com/_next/static/chunks/1497-_qlhtunm.js","/blogs.rajivnayanc.com/_next/static/chunks/0d3shmwh5_nmn.js"],"OutletBoundary"]
+4:"$Sreact.suspense"
+2:T431,# Rajiv's Blog
+
+> Software engineering, AI, system design, personal achievements, and everything tech — by Rajiv Nayan Choubey.
+
+## About
+Author: Rajiv Nayan Choubey
+Website: https://blogs.rajivnayanc.com
+Topics: Software Engineering, AI, System Design, Personal Achievements, Tech
+
+## Blog Posts
+
+- [The Ferrari Engine with Bicycle Brakes: An ADHD Guide to Actually Finishing Your Projects](https://blogs.rajivnayanc.com/blog/the-ferrari-engine-with-bicycle-brakes-an-adhd-guide-to-actually-finishing-your-projects): High intelligence and ADHD are a powerful combo for entrepreneurs, but they often lead to a graveyard of unfinished ideas. Learn how to stop procrastinating and start shipping.
+- [Hello World: Building This Blog](https://blogs.rajivnayanc.com/blog/hello-world): A deep dive into how I built this blog using Next.js, MDX, and a custom design system with light/dark theme support.
+
+## Links
+- Website: https://rajivnayanc.com
+- LinkedIn: https://www.linkedin.com/in/rajivnayanc
+- Twitter: https://x.com/rajivnayanc
+- GitHub: https://github.com/rajivnayanc0:{"rsc":["$","$1","c",{"children":[["$","pre",null,{"style":{"whiteSpace":"pre-wrap","fontFamily":"var(--font-mono)","padding":"2rem","maxWidth":"var(--content-width)","margin":"0 auto"},"children":"$2"}],null,["$","$L3",null,{"children":["$","$4",null,{"name":"Next.MetadataOutlet","children":"$@5"}]}]]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"xExqxoydu6GMMwchWHkf0"}
+5:null
