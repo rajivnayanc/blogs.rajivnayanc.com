@@ -20,6 +20,8 @@ export const siteConfig = {
       github: "https://github.com/rajivnayanc",
     },
   },
+  ogImage: "/og_image.png",
+  logo: "/logo64.png",
   locale: "en-US",
   // Google Analytics — only fires on the production domain
   analytics: {
