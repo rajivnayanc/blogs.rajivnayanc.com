@@ -18,10 +18,11 @@ export const siteConfig = {
       linkedin: "https://www.linkedin.com/in/rajivnayanc",
       twitter: "https://x.com/rajivnayanc",
       github: "https://github.com/rajivnayanc",
+      youtube: "https://www.youtube.com/c/TheLostCoders",
     },
   },
   ogImage: "/og_image.png",
-  logo: "/logo64.png",
+  logo: "/logo.svg",
   locale: "en-US",
   // Google Analytics — only fires on the production domain
   analytics: {
