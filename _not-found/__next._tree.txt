@@ -1,4 +1,4 @@
 :HL["/blogs.rajivnayanc.com/_next/static/chunks/0icdpf~7xkfeu.css","style"]
 :HL["/blogs.rajivnayanc.com/_next/static/chunks/0adhrzo9wrhry.css","style"]
 :HL["/blogs.rajivnayanc.com/_next/static/chunks/0-_92t5psndez.css","style"]
-0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"/_not-found","param":null,"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}},"staleTime":300,"buildId":"7DasjIRJCOTrF6Rx9fgC7"}
+0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"/_not-found","param":null,"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}},"staleTime":300,"buildId":"s5sbmHKwDUZF5SBeb-JB-"}
