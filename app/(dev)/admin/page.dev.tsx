@@ -43,6 +43,7 @@ function AdminDashboard() {
   const [editingSeries, setEditingSeries] = useState<Series | null>(null);
   const [seriesFormName, setSeriesFormName] = useState("");
   const [seriesFormDesc, setSeriesFormDesc] = useState("");
+  const [seriesFormImage, setSeriesFormImage] = useState("");
   const [deletingSeriesId, setDeletingSeriesId] = useState<string | null>(null);
   const [deleteAction, setDeleteAction] = useState<"unlink" | "delete_blogs">("unlink");
 
@@ -247,6 +248,7 @@ author: "Rajiv Nayan Choubey"
     setEditingSeries(series);
     setSeriesFormName(series.name);
     setSeriesFormDesc(series.description);
+    setSeriesFormImage(series.image || "");
     setActiveTab("series");
   };
 
@@ -254,6 +256,7 @@ author: "Rajiv Nayan Choubey"
     setEditingSeries(null);
     setSeriesFormName("");
     setSeriesFormDesc("");
+    setSeriesFormImage("");
   };
 
   const handleSaveSeries = async () => {
@@ -275,6 +278,7 @@ author: "Rajiv Nayan Choubey"
           id: seriesId,
           name: seriesFormName,
           description: seriesFormDesc,
+          image: seriesFormImage,
         }),
       });
 
@@ -390,6 +394,7 @@ author: "Rajiv Nayan Choubey"
     
     const formData = new FormData();
     formData.append("slug", slug);
+    formData.append("isCover", "true");
     formData.append("images", files[0]);
 
     try {
@@ -411,6 +416,44 @@ author: "Rajiv Nayan Choubey"
       }
     } catch {
       setStatus("Error uploading cover image.");
+    }
+  };
+
+  const handleSeriesBannerUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    
+    const targetId = editingSeries 
+      ? editingSeries.id 
+      : seriesFormName
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/(^-|-$)/g, "") || "new-series";
+    
+    const formData = new FormData();
+    formData.append("isSeries", "true");
+    formData.append("seriesId", targetId);
+    formData.append("images", files[0]);
+
+    try {
+      setStatus("Uploading series banner...");
+      const res = await fetch("/api/admin/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        const paths = data.paths as string[];
+        if (paths.length > 0) {
+          setSeriesFormImage(paths[0]);
+          setStatus(`Uploaded series banner: ${paths[0]}`);
+        }
+      } else {
+        setStatus("Failed to upload series banner.");
+      }
+    } catch {
+      setStatus("Error uploading series banner.");
     }
   };
 
@@ -746,6 +789,25 @@ author: "Rajiv Nayan Choubey"
                 onChange={(e) => setSeriesFormDesc(e.target.value)}
                 className={styles.input}
               />
+              <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+                <input
+                  type="text"
+                  placeholder="Series Banner Image Path (e.g. /images/series/system-design.jpg)"
+                  value={seriesFormImage}
+                  onChange={(e) => setSeriesFormImage(e.target.value)}
+                  className={styles.input}
+                  style={{ flexGrow: 1, margin: 0 }}
+                />
+                <label className={styles.uploadLabel} style={{ whiteSpace: "nowrap", cursor: "pointer", margin: 0, padding: "8px 16px", display: "inline-flex", alignItems: "center", gap: "8px" }}>
+                  🖼️ Upload Banner
+                  <input
+                    type="file"
+                    accept="image/*"
+                    style={{ display: "none" }}
+                    onChange={handleSeriesBannerUpload}
+                  />
+                </label>
+              </div>
               <div style={{ display: "flex", gap: "10px" }}>
                 <button onClick={handleSaveSeries} className={styles.btnPrimary}>
                   {editingSeries ? "Update Series" : "Create Series"}
@@ -776,6 +838,11 @@ author: "Rajiv Nayan Choubey"
                       <p style={{ fontSize: "var(--font-size-xs)", color: "hsl(var(--muted-foreground))", marginTop: "4px" }}>
                         {s.description || "No description provided."}
                       </p>
+                      {s.image && (
+                        <p style={{ fontSize: "var(--font-size-xs)", color: "hsl(var(--muted-foreground))", marginTop: "4px" }}>
+                          Banner: <code>{s.image}</code>
+                        </p>
+                      )}
                       <code style={{ fontSize: "10px", background: "hsl(var(--muted))", padding: "2px 6px", borderRadius: "var(--radius-sm)", display: "inline-block", marginTop: "6px" }}>
                         ID: {s.id}
                       </code>
