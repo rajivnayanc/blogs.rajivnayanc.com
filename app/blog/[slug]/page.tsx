@@ -103,15 +103,6 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           </div>
         </header>
 
-        {postSeriesList.map(({ series, posts }) => (
-          <SeriesCard
-            key={series.id}
-            series={series}
-            posts={posts}
-            currentSlug={slug}
-          />
-        ))}
-
         {/* Cover Image */}
         {frontmatter.image && (
           <div className={styles.coverImage}>
@@ -122,6 +113,15 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             />
           </div>
         )}
+
+        {postSeriesList.map(({ series, posts }) => (
+          <SeriesCard
+            key={series.id}
+            series={series}
+            posts={posts}
+            currentSlug={slug}
+          />
+        ))}
 
         {/* MDX Content */}
         <div className="prose">

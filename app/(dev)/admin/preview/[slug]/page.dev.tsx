@@ -82,15 +82,6 @@ export default async function DraftPreviewPage({ params }: PreviewPageProps) {
           </div>
         </header>
 
-        {postSeriesList.map(({ series, posts }) => (
-          <SeriesCard
-            key={series.id}
-            series={series}
-            posts={posts}
-            currentSlug={slug}
-          />
-        ))}
-
         {/* Cover Image */}
         {frontmatter.image && (
           <div className={styles.coverImage}>
@@ -101,6 +92,15 @@ export default async function DraftPreviewPage({ params }: PreviewPageProps) {
             />
           </div>
         )}
+
+        {postSeriesList.map(({ series, posts }) => (
+          <SeriesCard
+            key={series.id}
+            series={series}
+            posts={posts}
+            currentSlug={slug}
+          />
+        ))}
 
         {/* MDX Content */}
         <div className="prose">
