@@ -23,6 +23,8 @@ export function constructMetadata({
   authors = [siteConfig.author.name],
   tags = siteConfig.defaultTags,
 }: ConstructMetadataProps = {}): Metadata {
+  const ogImageUrl = withBasePath(image);
+
   return {
     title: {
       default: title,
@@ -42,7 +44,7 @@ export function constructMetadata({
       type,
       images: [
         {
-          url: withBasePath(image),
+          url: ogImageUrl,
           alt: title,
         },
       ],
@@ -54,8 +56,9 @@ export function constructMetadata({
       card: "summary_large_image",
       title,
       description,
+      site: siteConfig.author.handle,
       creator: siteConfig.author.handle,
-      images: [withBasePath(image)],
+      images: [ogImageUrl],
     },
     robots: {
       index: true,

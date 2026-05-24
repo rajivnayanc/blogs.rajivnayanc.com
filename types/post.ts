@@ -11,6 +11,7 @@ export interface PostFrontmatter {
   author?: string;
   seriesId?: string;
   seriesOrder?: number;
+  series?: { id: string; order?: number }[];
 }
 
 export interface Series {

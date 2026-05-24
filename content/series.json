@@ -1,1 +1,12 @@
-[]
+[
+  {
+    "id": "system-design-basics",
+    "name": "System Design Basics",
+    "description": "Series to uncover the best ways to build the scalable data-intesive applications (What's, Why's and How's)"
+  },
+  {
+    "id": "payment-systems",
+    "name": " Payment Systems",
+    "description": "The Complete Developer's Guide to Payment Systems"
+  }
+]

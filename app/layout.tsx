@@ -6,6 +6,7 @@ import { Footer } from "@/components/layout/Footer";
 import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
 import { siteConfig } from "@/config/site";
 import { constructMetadata } from "@/lib/seo";
+import "katex/dist/katex.min.css";
 import "./globals.css";
 
 const geistSans = Geist({

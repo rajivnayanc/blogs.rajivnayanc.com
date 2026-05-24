@@ -177,10 +177,22 @@ export function getSeriesById(id: string): Series | null {
 
 export function getPostsInSeries(seriesId: string): PostMeta[] {
   return getAllPostsMeta()
-    .filter((p) => p.frontmatter.seriesId === seriesId)
+    .filter((p) => {
+      const matchesSingle = p.frontmatter.seriesId === seriesId;
+      const matchesMulti = p.frontmatter.series?.some((s) => s.id === seriesId);
+      return matchesSingle || matchesMulti;
+    })
     .sort((a, b) => {
-      const orderA = a.frontmatter.seriesOrder ?? Number.MAX_SAFE_INTEGER;
-      const orderB = b.frontmatter.seriesOrder ?? Number.MAX_SAFE_INTEGER;
-      return orderA - orderB;
+      const getOrder = (post: PostMeta) => {
+        if (post.frontmatter.seriesId === seriesId && post.frontmatter.seriesOrder !== undefined) {
+          return post.frontmatter.seriesOrder;
+        }
+        const multi = post.frontmatter.series?.find((s) => s.id === seriesId);
+        if (multi && multi.order !== undefined) {
+          return multi.order;
+        }
+        return Number.MAX_SAFE_INTEGER;
+      };
+      return getOrder(a) - getOrder(b);
     });
 }
