@@ -22,11 +22,11 @@ function AdminDashboard() {
   const [tags, setTags] = useState("Software Engineering");
   const [description, setDescription] = useState("");
   const [status, setStatus] = useState("");
+  const [coverImage, setCoverImage] = useState("");
   
   // Series states
   const [allSeries, setAllSeries] = useState<Series[]>([]);
-  const [selectedSeriesId, setSelectedSeriesId] = useState("");
-  const [seriesOrder, setSeriesOrder] = useState("");
+  const [selectedSeriesList, setSelectedSeriesList] = useState<{ id: string; order?: number }[]>([]);
   
   // New series creation states
   const [isCreatingSeries, setIsCreatingSeries] = useState(false);
@@ -34,10 +34,17 @@ function AdminDashboard() {
   const [newSeriesDesc, setNewSeriesDesc] = useState("");
 
   const [drafts, setDrafts] = useState<DraftFile[]>([]);
-  const [activeTab, setActiveTab] = useState<"write" | "drafts">("write");
+  const [activeTab, setActiveTab] = useState<"write" | "drafts" | "series">("write");
   const [originalSlug, setOriginalSlug] = useState<string | null>(null);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [isAutoSaving, setIsAutoSaving] = useState(false);
+
+  // Series management states
+  const [editingSeries, setEditingSeries] = useState<Series | null>(null);
+  const [seriesFormName, setSeriesFormName] = useState("");
+  const [seriesFormDesc, setSeriesFormDesc] = useState("");
+  const [deletingSeriesId, setDeletingSeriesId] = useState<string | null>(null);
+  const [deleteAction, setDeleteAction] = useState<"unlink" | "delete_blogs">("unlink");
 
   const slug = title
     .toLowerCase()
@@ -93,7 +100,12 @@ function AdminDashboard() {
       if (res.ok) {
         const data = await res.json();
         setAllSeries(data.series);
-        setSelectedSeriesId(newId);
+        setSelectedSeriesList(prev => {
+          if (!prev.some(s => s.id === newId)) {
+            return [...prev, { id: newId, order: 1 }];
+          }
+          return prev;
+        });
         setIsCreatingSeries(false);
         setNewSeriesName("");
         setNewSeriesDesc("");
@@ -107,21 +119,24 @@ function AdminDashboard() {
     let fm = `---
 title: "${title}"
 description: "${description}"
-date: "${new Date().toISOString().split("T")[0]}"
+date: "${new Date().toISOString()}"
 tags: [${tags
       .split(",")
       .filter(t => t.trim() !== "")
       .map((t) => `"${t.trim()}"`)
       .join(", ")}]
-image: ""
+image: "${coverImage}"
 published: false
 author: "Rajiv Nayan Choubey"
 `;
-    if (selectedSeriesId && selectedSeriesId !== "none") {
-      fm += `seriesId: "${selectedSeriesId}"\n`;
-      if (seriesOrder) {
-        fm += `seriesOrder: ${parseInt(seriesOrder, 10)}\n`;
-      }
+    if (selectedSeriesList.length > 0) {
+      fm += `series:\n`;
+      selectedSeriesList.forEach((s) => {
+        fm += `  - id: "${s.id}"\n`;
+        if (s.order !== undefined && !isNaN(s.order)) {
+          fm += `    order: ${s.order}\n`;
+        }
+      });
     }
     fm += `---\n\n`;
     return fm;
@@ -171,7 +186,7 @@ author: "Rajiv Nayan Choubey"
     }, 5000); // Auto-save after 5 seconds of inactivity
 
     return () => clearTimeout(timer);
-  }, [content, title, description, tags, selectedSeriesId, seriesOrder]);
+  }, [content, title, description, tags, coverImage, selectedSeriesList]);
 
   const handleEdit = async (editSlug: string) => {
     try {
@@ -185,8 +200,14 @@ author: "Rajiv Nayan Choubey"
         setDescription(fm.description || "");
         setTags(Array.isArray(fm.tags) ? fm.tags.join(", ") : "");
         setContent(data.content || "");
-        setSelectedSeriesId(fm.seriesId || "none");
-        setSeriesOrder(fm.seriesOrder ? fm.seriesOrder.toString() : "");
+        setCoverImage(fm.image || "");
+        
+        if (Array.isArray(fm.series)) {
+          setSelectedSeriesList(fm.series);
+        } else {
+          setSelectedSeriesList([]);
+        }
+
         setOriginalSlug(editSlug);
         setActiveTab("write");
         setStatus(`Editing: ${editSlug}`);
@@ -195,6 +216,107 @@ author: "Rajiv Nayan Choubey"
       }
     } catch {
       setStatus("Error fetching post data.");
+    }
+  };
+
+  const handleDelete = async (deleteSlug: string) => {
+    const confirmDelete = window.confirm(`Are you sure you want to delete draft "${deleteSlug}"?`);
+    if (!confirmDelete) return;
+
+    try {
+      setStatus("Deleting draft...");
+      const res = await fetch("/api/admin/drafts", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ slug: deleteSlug }),
+      });
+
+      if (res.ok) {
+        setStatus(`Deleted draft: ${deleteSlug}`);
+        loadDrafts();
+      } else {
+        const data = await res.json();
+        setStatus(`Failed to delete draft: ${data.error || "Unknown error"}`);
+      }
+    } catch {
+      setStatus("Error deleting draft.");
+    }
+  };
+
+  const startEditSeries = (series: Series) => {
+    setEditingSeries(series);
+    setSeriesFormName(series.name);
+    setSeriesFormDesc(series.description);
+    setActiveTab("series");
+  };
+
+  const cancelEditingSeries = () => {
+    setEditingSeries(null);
+    setSeriesFormName("");
+    setSeriesFormDesc("");
+  };
+
+  const handleSaveSeries = async () => {
+    if (!seriesFormName) return;
+    
+    const seriesId = editingSeries 
+      ? editingSeries.id 
+      : seriesFormName
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/(^-|-$)/g, "");
+
+    try {
+      setStatus(editingSeries ? "Updating series..." : "Creating series...");
+      const res = await fetch("/api/admin/series", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: seriesId,
+          name: seriesFormName,
+          description: seriesFormDesc,
+        }),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setAllSeries(data.series);
+        setStatus(editingSeries ? `Updated series: ${seriesFormName}` : `Created series: ${seriesFormName}`);
+        cancelEditingSeries();
+        loadSeries();
+      } else {
+        setStatus("Failed to save series.");
+      }
+    } catch {
+      setStatus("Error saving series.");
+    }
+  };
+
+  const confirmDeleteSeries = async (id: string) => {
+    try {
+      setStatus("Deleting series...");
+      const res = await fetch("/api/admin/series", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          seriesId: id,
+          action: deleteAction,
+        }),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setAllSeries(data.series);
+        setStatus("Deleted series and updated related posts.");
+        setDeletingSeriesId(null);
+        loadSeries();
+        loadDrafts();
+      } else {
+        const data = await res.json();
+        setStatus(`Failed to delete series: ${data.error || "Unknown error"}`);
+      }
+    } catch {
+      setStatus("Error deleting series.");
     }
   };
 
@@ -262,6 +384,36 @@ author: "Rajiv Nayan Choubey"
     }
   };
 
+  const handleCoverImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0 || !slug) return;
+    
+    const formData = new FormData();
+    formData.append("slug", slug);
+    formData.append("images", files[0]);
+
+    try {
+      setStatus("Uploading cover image...");
+      const res = await fetch("/api/admin/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        const paths = data.paths as string[];
+        if (paths.length > 0) {
+          setCoverImage(paths[0]);
+          setStatus(`Uploaded cover image: ${paths[0]}`);
+        }
+      } else {
+        setStatus("Failed to upload cover image.");
+      }
+    } catch {
+      setStatus("Error uploading cover image.");
+    }
+  };
+
   return (
     <div className={styles.dashboard}>
       <header className={styles.header}>
@@ -272,19 +424,34 @@ author: "Rajiv Nayan Choubey"
       <div className={styles.tabs}>
         <button
           className={`${styles.tab} ${activeTab === "write" ? styles.activeTab : ""}`}
-          onClick={() => setActiveTab("write")}
+          onClick={() => {
+            cancelEditingSeries();
+            setActiveTab("write");
+          }}
         >
           Write
         </button>
         <button
           className={`${styles.tab} ${activeTab === "drafts" ? styles.activeTab : ""}`}
-          onClick={() => setActiveTab("drafts")}
+          onClick={() => {
+            cancelEditingSeries();
+            setActiveTab("drafts");
+          }}
         >
           Drafts ({drafts.length})
         </button>
+        <button
+          className={`${styles.tab} ${activeTab === "series" ? styles.activeTab : ""}`}
+          onClick={() => {
+            cancelEditingSeries();
+            setActiveTab("series");
+          }}
+        >
+          Series ({allSeries.length})
+        </button>
       </div>
 
-      {activeTab === "write" ? (
+      {activeTab === "write" && (
         <div className={styles.editor}>
           {/* Metadata */}
           <div className={styles.fields}>
@@ -309,47 +476,103 @@ author: "Rajiv Nayan Choubey"
               onChange={(e) => setTags(e.target.value)}
               className={styles.input}
             />
+
+            {/* Cover / OG Image Management */}
+            <div style={{ display: "flex", gap: "8px", alignItems: "center", width: "100%" }}>
+              <input
+                type="text"
+                placeholder="Cover / OG Image Path (e.g. /images/posts/my-post/cover.png)"
+                value={coverImage}
+                onChange={(e) => setCoverImage(e.target.value)}
+                className={styles.input}
+                style={{ flex: 1 }}
+              />
+              <label className={styles.uploadLabel} style={{ whiteSpace: "nowrap", cursor: "pointer", margin: 0, padding: "8px 16px", display: "inline-flex", alignItems: "center", gap: "8px" }}>
+                🖼️ Upload Cover
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleCoverImageUpload}
+                  className={styles.fileInput}
+                />
+              </label>
+            </div>
             
-            {/* Series Selection */}
-            <div className={styles.playlistSection}>
+            {/* Series Management for Drafting */}
+            <div className={styles.playlistSection} style={{ border: "1px solid hsl(var(--border))", padding: "1rem", borderRadius: "var(--radius-lg)", marginTop: "10px" }}>
+              <span className={styles.paneTitle} style={{ display: "block", marginBottom: "8px" }}>Post Series</span>
+              
+              {selectedSeriesList.length > 0 && (
+                <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginBottom: "1rem" }}>
+                  {selectedSeriesList.map((item, idx) => {
+                    const seriesInfo = allSeries.find(s => s.id === item.id);
+                    return (
+                      <div key={item.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "8px 12px", background: "hsl(var(--muted))", borderRadius: "var(--radius-md)" }}>
+                        <div style={{ display: "flex", flexDirection: "column" }}>
+                          <span style={{ fontSize: "var(--font-size-sm)", fontWeight: 600 }}>{seriesInfo?.name || item.id}</span>
+                          <span style={{ fontSize: "10px", opacity: 0.6 }}>ID: {item.id}</span>
+                        </div>
+                        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                          <label style={{ fontSize: "var(--font-size-xs)", opacity: 0.8 }}>Order:</label>
+                          <input
+                            type="number"
+                            placeholder="Order"
+                            value={item.order !== undefined ? item.order : ""}
+                            onChange={(e) => {
+                              const val = e.target.value === "" ? undefined : parseInt(e.target.value, 10);
+                              setSelectedSeriesList(prev => prev.map((s, i) => i === idx ? { ...s, order: val } : s));
+                            }}
+                            className={styles.input}
+                            style={{ width: "80px", padding: "4px 8px", fontSize: "var(--font-size-xs)" }}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setSelectedSeriesList(prev => prev.filter((_, i) => i !== idx));
+                            }}
+                            className={styles.draftDeleteLink}
+                            style={{ marginLeft: "8px" }}
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
               <div style={{ display: 'flex', gap: '8px' }}>
                 <select
-                  value={selectedSeriesId}
+                  value=""
                   onChange={(e) => {
-                    if (e.target.value === "new") {
-                      setSelectedSeriesId("none");
+                    const val = e.target.value;
+                    if (val === "new") {
                       setIsCreatingSeries(true);
-                    } else {
-                      setSelectedSeriesId(e.target.value);
+                    } else if (val && val !== "") {
+                      if (!selectedSeriesList.some(s => s.id === val)) {
+                        setSelectedSeriesList(prev => [...prev, { id: val, order: 1 }]);
+                      }
                       setIsCreatingSeries(false);
                     }
                   }}
                   className={styles.input}
                 >
-                  <option value="none">-- No Series --</option>
-                  {allSeries.map(s => (
-                    <option key={s.id} value={s.id}>{s.name}</option>
-                  ))}
+                  <option value="">-- Add to a Series --</option>
+                  {allSeries
+                    .filter(s => !selectedSeriesList.some(item => item.id === s.id))
+                    .map(s => (
+                      <option key={s.id} value={s.id}>{s.name}</option>
+                    ))}
                   <option value="new">+ Create New Series</option>
                 </select>
-                
-                {selectedSeriesId !== "none" && selectedSeriesId !== "" && !isCreatingSeries && (
-                  <input
-                    type="number"
-                    placeholder="Series Order (e.g. 1)"
-                    value={seriesOrder}
-                    onChange={(e) => setSeriesOrder(e.target.value)}
-                    className={styles.input}
-                    style={{ width: '150px' }}
-                  />
-                )}
               </div>
               
               {isCreatingSeries && (
                 <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
                   <input
                     type="text"
-                    placeholder="Series Name"
+                    placeholder="New Series Name"
                     value={newSeriesName}
                     onChange={(e) => setNewSeriesName(e.target.value)}
                     className={styles.input}
@@ -361,8 +584,42 @@ author: "Rajiv Nayan Choubey"
                     onChange={(e) => setNewSeriesDesc(e.target.value)}
                     className={styles.input}
                   />
-                  <button onClick={handleCreateSeries} className={styles.btnPrimary}>Save</button>
-                  <button onClick={() => setIsCreatingSeries(false)} className={styles.btnSecondary}>Cancel</button>
+                  <button 
+                    type="button" 
+                    onClick={async () => {
+                      if (!newSeriesName) return;
+                      const newId = newSeriesName
+                        .toLowerCase()
+                        .replace(/[^a-z0-9]+/g, "-")
+                        .replace(/(^-|-$)/g, "");
+                      
+                      try {
+                        const res = await fetch("/api/admin/series", {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({
+                            id: newId,
+                            name: newSeriesName,
+                            description: newSeriesDesc,
+                          }),
+                        });
+                        if (res.ok) {
+                          const data = await res.json();
+                          setAllSeries(data.series);
+                          setSelectedSeriesList(prev => [...prev, { id: newId, order: 1 }]);
+                          setIsCreatingSeries(false);
+                          setNewSeriesName("");
+                          setNewSeriesDesc("");
+                        }
+                      } catch (err) {
+                        setStatus("Error creating series.");
+                      }
+                    }} 
+                    className={styles.btnPrimary}
+                  >
+                    Save
+                  </button>
+                  <button type="button" onClick={() => setIsCreatingSeries(false)} className={styles.btnSecondary}>Cancel</button>
                 </div>
               )}
             </div>
@@ -430,7 +687,9 @@ author: "Rajiv Nayan Choubey"
             </p>
           )}
         </div>
-      ) : (
+      )}
+
+      {activeTab === "drafts" && (
         <div className={styles.draftsList}>
           {drafts.length === 0 ? (
             <p className={styles.emptyDrafts}>No drafts yet.</p>
@@ -453,10 +712,149 @@ author: "Rajiv Nayan Choubey"
                   >
                     Edit
                   </button>
+                  <button 
+                    onClick={() => handleDelete(draft.slug)}
+                    className={styles.draftDeleteLink}
+                  >
+                    Delete
+                  </button>
                 </div>
               </div>
             ))
           )}
+        </div>
+      )}
+
+      {activeTab === "series" && (
+        <div className={styles.seriesSection}>
+          <div style={{ marginBottom: "2rem", padding: "1.5rem", border: "1px solid hsl(var(--border))", borderRadius: "var(--radius-lg)", backgroundColor: "hsl(var(--muted) / 0.2)" }}>
+            <h3 style={{ fontSize: "var(--font-size-lg)", fontWeight: 600, marginBottom: "1rem" }}>
+              {editingSeries ? `Edit Series: ${editingSeries.name}` : "Create New Series"}
+            </h3>
+            <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+              <input
+                type="text"
+                placeholder="Series Name (e.g. System Design)"
+                value={seriesFormName}
+                onChange={(e) => setSeriesFormName(e.target.value)}
+                className={styles.input}
+              />
+              <input
+                type="text"
+                placeholder="Series Description"
+                value={seriesFormDesc}
+                onChange={(e) => setSeriesFormDesc(e.target.value)}
+                className={styles.input}
+              />
+              <div style={{ display: "flex", gap: "10px" }}>
+                <button onClick={handleSaveSeries} className={styles.btnPrimary}>
+                  {editingSeries ? "Update Series" : "Create Series"}
+                </button>
+                {editingSeries && (
+                  <button onClick={cancelEditingSeries} className={styles.btnSecondary}>
+                    Cancel
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+            <h3 style={{ fontSize: "var(--font-size-lg)", fontWeight: 600, marginBottom: "0.5rem" }}>Existing Series ({allSeries.length})</h3>
+            {allSeries.length === 0 ? (
+              <p className={styles.emptyDrafts}>No series available yet.</p>
+            ) : (
+              allSeries.map((s) => (
+                <div 
+                  key={s.id} 
+                  className={styles.draftItem} 
+                  style={{ display: "flex", flexDirection: "column", alignItems: "stretch", gap: "12px" }}
+                >
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <div>
+                      <span className={styles.draftName} style={{ fontSize: "var(--font-size-base)", fontWeight: 600 }}>{s.name}</span>
+                      <p style={{ fontSize: "var(--font-size-xs)", color: "hsl(var(--muted-foreground))", marginTop: "4px" }}>
+                        {s.description || "No description provided."}
+                      </p>
+                      <code style={{ fontSize: "10px", background: "hsl(var(--muted))", padding: "2px 6px", borderRadius: "var(--radius-sm)", display: "inline-block", marginTop: "6px" }}>
+                        ID: {s.id}
+                      </code>
+                    </div>
+                    <div className={styles.draftActions}>
+                      <button 
+                        onClick={() => startEditSeries(s)}
+                        className={styles.draftLink}
+                      >
+                        Edit
+                      </button>
+                      <button 
+                        onClick={() => {
+                          setDeletingSeriesId(s.id);
+                          setDeleteAction("unlink");
+                        }}
+                        className={styles.draftDeleteLink}
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+
+                  {deletingSeriesId === s.id && (
+                    <div 
+                      style={{ 
+                        marginTop: "8px", 
+                        padding: "1rem", 
+                        background: "hsl(var(--destructive) / 0.05)", 
+                        border: "1px solid hsl(var(--destructive) / 0.2)", 
+                        borderRadius: "var(--radius-md)" 
+                      }}
+                    >
+                      <p style={{ fontSize: "var(--font-size-sm)", fontWeight: 600, color: "hsl(var(--destructive))", marginBottom: "8px" }}>
+                        Delete Series Option:
+                      </p>
+                      <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginBottom: "1rem" }}>
+                        <label style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "var(--font-size-xs)", cursor: "pointer", color: "hsl(var(--foreground))" }}>
+                          <input 
+                            type="radio" 
+                            name={`delete-action-${s.id}`} 
+                            value="unlink" 
+                            checked={deleteAction === "unlink"}
+                            onChange={() => setDeleteAction("unlink")}
+                          />
+                          Unlink posts (keeps all post files, just removes them from this series)
+                        </label>
+                        <label style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "var(--font-size-xs)", cursor: "pointer", color: "hsl(var(--destructive))" }}>
+                          <input 
+                            type="radio" 
+                            name={`delete-action-${s.id}`} 
+                            value="delete_blogs" 
+                            checked={deleteAction === "delete_blogs"}
+                            onChange={() => setDeleteAction("delete_blogs")}
+                          />
+                          Delete all posts in this series permanently
+                        </label>
+                      </div>
+                      <div style={{ display: "flex", gap: "10px" }}>
+                        <button 
+                          onClick={() => confirmDeleteSeries(s.id)} 
+                          className={styles.btnPrimary}
+                          style={{ backgroundColor: "hsl(var(--destructive))", color: "hsl(var(--destructive-foreground))" }}
+                        >
+                          Confirm Delete
+                        </button>
+                        <button 
+                          onClick={() => setDeletingSeriesId(null)} 
+                          className={styles.btnSecondary}
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))
+            )}
+          </div>
         </div>
       )}
     </div>

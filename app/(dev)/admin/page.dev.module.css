@@ -282,3 +282,20 @@
     grid-template-columns: 1fr;
   }
 }
+
+.draftDeleteLink {
+  font-size: var(--font-size-xs);
+  color: hsl(var(--destructive));
+  text-decoration: none;
+  font-weight: 600;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.draftDeleteLink:hover {
+  text-decoration: underline;
+  opacity: 0.8;
+}

@@ -8,6 +8,7 @@
 import type { MDXComponents } from "mdx/types";
 import { Pre } from "./Pre";
 import { withBasePath } from "@/lib/utils";
+import { MermaidDiagram } from "./MermaidDiagram";
 
 export function getMDXComponents(): MDXComponents {
   return {
@@ -44,7 +45,7 @@ export function getMDXComponents(): MDXComponents {
       type?: "info" | "warning" | "tip" | "danger";
       children: React.ReactNode;
     }) => <div className={`callout callout-${type}`}>{children}</div>,
-    // Placeholder for future Mermaid diagram support
-    // Mermaid: ({ chart }: { chart: string }) => <MermaidDiagram chart={chart} />,
+    // Native Mermaid diagram support
+    "mermaid-diagram": (props: any) => <MermaidDiagram chart={props.chart} />,
   };
 }

@@ -3,6 +3,10 @@ import { MDXRemote } from "next-mdx-remote/rsc";
 import rehypePrettyCode from "rehype-pretty-code";
 import remarkGfm from "remark-gfm";
 import { getDraftBySlug, getSeriesById, getPostsInSeries } from "@/lib/mdx";
+import type { Series, PostMeta } from "@/types/post";
+import { rehypeMermaid } from "@/lib/rehype-mermaid";
+import remarkMath from "remark-math";
+import rehypeKatex from "rehype-katex";
 import { getMDXComponents } from "@/components/mdx/MDXComponents";
 import { SeriesCard } from "@/components/blog/SeriesCard";
 import { formatDate, withBasePath } from "@/lib/utils";
@@ -26,8 +30,19 @@ export default async function DraftPreviewPage({ params }: PreviewPageProps) {
     notFound();
   }
 
-  const series = post.frontmatter.seriesId ? getSeriesById(post.frontmatter.seriesId) : null;
-  const seriesPosts = post.frontmatter.seriesId ? getPostsInSeries(post.frontmatter.seriesId) : [];
+  const postSeriesList: { series: Series; posts: PostMeta[] }[] = [];
+  
+  if (post.frontmatter.series) {
+    post.frontmatter.series.forEach(item => {
+      const s = getSeriesById(item.id);
+      if (s) {
+        postSeriesList.push({
+          series: s,
+          posts: getPostsInSeries(item.id)
+        });
+      }
+    });
+  }
 
   const { frontmatter, content } = post;
 
@@ -67,10 +82,6 @@ export default async function DraftPreviewPage({ params }: PreviewPageProps) {
           </div>
         </header>
 
-        {series && seriesPosts.length > 0 && (
-          <SeriesCard series={series} posts={seriesPosts} currentSlug={slug} />
-        )}
-
         {/* Cover Image */}
         {frontmatter.image && (
           <div className={styles.coverImage}>
@@ -82,6 +93,15 @@ export default async function DraftPreviewPage({ params }: PreviewPageProps) {
           </div>
         )}
 
+        {postSeriesList.map(({ series, posts }) => (
+          <SeriesCard
+            key={series.id}
+            series={series}
+            posts={posts}
+            currentSlug={slug}
+          />
+        ))}
+
         {/* MDX Content */}
         <div className="prose">
           <MDXRemote
@@ -89,8 +109,10 @@ export default async function DraftPreviewPage({ params }: PreviewPageProps) {
             components={getMDXComponents()}
             options={{
               mdxOptions: {
-                remarkPlugins: [remarkGfm],
+                remarkPlugins: [remarkGfm, remarkMath],
                 rehypePlugins: [
+                  rehypeMermaid,
+                  rehypeKatex,
                   [
                     rehypePrettyCode,
                     {
