@@ -1,5 +1,5 @@
 1:"$Sreact.fragment"
-3:I[97367,["/blogs.rajivnayanc.com/_next/static/chunks/06nz-md0j3t98.js","/blogs.rajivnayanc.com/_next/static/chunks/0d3shmwh5_nmn.js"],"OutletBoundary"]
+3:I[97367,["/blogs.rajivnayanc.com/_next/static/chunks/06nz-md0j3t98.js","/blogs.rajivnayanc.com/_next/static/chunks/0n4z.7yu76je-.js"],"OutletBoundary"]
 4:"$Sreact.suspense"
 2:T431,# Rajiv's Blog
 
@@ -19,5 +19,5 @@ Topics: Software Engineering, AI, System Design, Personal Achievements, Tech
 - Website: https://rajivnayanc.com
 - LinkedIn: https://www.linkedin.com/in/rajivnayanc
 - Twitter: https://x.com/rajivnayanc
-- GitHub: https://github.com/rajivnayanc0:{"rsc":["$","$1","c",{"children":[["$","pre",null,{"style":{"whiteSpace":"pre-wrap","fontFamily":"var(--font-mono)","padding":"2rem","maxWidth":"var(--content-width)","margin":"0 auto"},"children":"$2"}],null,["$","$L3",null,{"children":["$","$4",null,{"name":"Next.MetadataOutlet","children":"$@5"}]}]]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"s5sbmHKwDUZF5SBeb-JB-"}
+- GitHub: https://github.com/rajivnayanc0:{"rsc":["$","$1","c",{"children":[["$","pre",null,{"style":{"whiteSpace":"pre-wrap","fontFamily":"var(--font-mono)","padding":"2rem","maxWidth":"var(--content-width)","margin":"0 auto"},"children":"$2"}],null,["$","$L3",null,{"children":["$","$4",null,{"name":"Next.MetadataOutlet","children":"$@5"}]}]]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"d8I_19it3UOD1-U62YOPu"}
 5:null
