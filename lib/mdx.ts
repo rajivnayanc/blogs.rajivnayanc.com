@@ -177,16 +177,9 @@ export function getSeriesById(id: string): Series | null {
 
 export function getPostsInSeries(seriesId: string): PostMeta[] {
   return getAllPostsMeta()
-    .filter((p) => {
-      const matchesSingle = p.frontmatter.seriesId === seriesId;
-      const matchesMulti = p.frontmatter.series?.some((s) => s.id === seriesId);
-      return matchesSingle || matchesMulti;
-    })
+    .filter((p) => p.frontmatter.series?.some((s) => s.id === seriesId))
     .sort((a, b) => {
       const getOrder = (post: PostMeta) => {
-        if (post.frontmatter.seriesId === seriesId && post.frontmatter.seriesOrder !== undefined) {
-          return post.frontmatter.seriesOrder;
-        }
         const multi = post.frontmatter.series?.find((s) => s.id === seriesId);
         if (multi && multi.order !== undefined) {
           return multi.order;

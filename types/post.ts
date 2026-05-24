@@ -9,8 +9,6 @@ export interface PostFrontmatter {
   image?: string; // Path relative to /public, e.g. "/images/posts/my-post/cover.jpg"
   published: boolean;
   author?: string;
-  seriesId?: string;
-  seriesOrder?: number;
   series?: { id: string; order?: number }[];
 }
 

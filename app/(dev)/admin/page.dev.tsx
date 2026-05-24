@@ -22,11 +22,10 @@ function AdminDashboard() {
   const [tags, setTags] = useState("Software Engineering");
   const [description, setDescription] = useState("");
   const [status, setStatus] = useState("");
+  const [coverImage, setCoverImage] = useState("");
   
   // Series states
   const [allSeries, setAllSeries] = useState<Series[]>([]);
-  const [selectedSeriesId, setSelectedSeriesId] = useState("");
-  const [seriesOrder, setSeriesOrder] = useState("");
   const [selectedSeriesList, setSelectedSeriesList] = useState<{ id: string; order?: number }[]>([]);
   
   // New series creation states
@@ -101,7 +100,6 @@ function AdminDashboard() {
       if (res.ok) {
         const data = await res.json();
         setAllSeries(data.series);
-        setSelectedSeriesId(newId);
         setSelectedSeriesList(prev => {
           if (!prev.some(s => s.id === newId)) {
             return [...prev, { id: newId, order: 1 }];
@@ -121,23 +119,17 @@ function AdminDashboard() {
     let fm = `---
 title: "${title}"
 description: "${description}"
-date: "${new Date().toISOString().split("T")[0]}"
+date: "${new Date().toISOString()}"
 tags: [${tags
       .split(",")
       .filter(t => t.trim() !== "")
       .map((t) => `"${t.trim()}"`)
       .join(", ")}]
-image: ""
+image: "${coverImage}"
 published: false
 author: "Rajiv Nayan Choubey"
 `;
     if (selectedSeriesList.length > 0) {
-      const primary = selectedSeriesList[0];
-      fm += `seriesId: "${primary.id}"\n`;
-      if (primary.order !== undefined && !isNaN(primary.order)) {
-        fm += `seriesOrder: ${primary.order}\n`;
-      }
-      
       fm += `series:\n`;
       selectedSeriesList.forEach((s) => {
         fm += `  - id: "${s.id}"\n`;
@@ -194,7 +186,7 @@ author: "Rajiv Nayan Choubey"
     }, 5000); // Auto-save after 5 seconds of inactivity
 
     return () => clearTimeout(timer);
-  }, [content, title, description, tags, selectedSeriesList]);
+  }, [content, title, description, tags, coverImage, selectedSeriesList]);
 
   const handleEdit = async (editSlug: string) => {
     try {
@@ -208,13 +200,10 @@ author: "Rajiv Nayan Choubey"
         setDescription(fm.description || "");
         setTags(Array.isArray(fm.tags) ? fm.tags.join(", ") : "");
         setContent(data.content || "");
-        setSelectedSeriesId(fm.seriesId || "none");
-        setSeriesOrder(fm.seriesOrder ? fm.seriesOrder.toString() : "");
+        setCoverImage(fm.image || "");
         
         if (Array.isArray(fm.series)) {
           setSelectedSeriesList(fm.series);
-        } else if (fm.seriesId && fm.seriesId !== "none") {
-          setSelectedSeriesList([{ id: fm.seriesId, order: fm.seriesOrder ? parseInt(fm.seriesOrder, 10) : 1 }]);
         } else {
           setSelectedSeriesList([]);
         }
@@ -395,6 +384,36 @@ author: "Rajiv Nayan Choubey"
     }
   };
 
+  const handleCoverImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0 || !slug) return;
+    
+    const formData = new FormData();
+    formData.append("slug", slug);
+    formData.append("images", files[0]);
+
+    try {
+      setStatus("Uploading cover image...");
+      const res = await fetch("/api/admin/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        const paths = data.paths as string[];
+        if (paths.length > 0) {
+          setCoverImage(paths[0]);
+          setStatus(`Uploaded cover image: ${paths[0]}`);
+        }
+      } else {
+        setStatus("Failed to upload cover image.");
+      }
+    } catch {
+      setStatus("Error uploading cover image.");
+    }
+  };
+
   return (
     <div className={styles.dashboard}>
       <header className={styles.header}>
@@ -457,6 +476,27 @@ author: "Rajiv Nayan Choubey"
               onChange={(e) => setTags(e.target.value)}
               className={styles.input}
             />
+
+            {/* Cover / OG Image Management */}
+            <div style={{ display: "flex", gap: "8px", alignItems: "center", width: "100%" }}>
+              <input
+                type="text"
+                placeholder="Cover / OG Image Path (e.g. /images/posts/my-post/cover.png)"
+                value={coverImage}
+                onChange={(e) => setCoverImage(e.target.value)}
+                className={styles.input}
+                style={{ flex: 1 }}
+              />
+              <label className={styles.uploadLabel} style={{ whiteSpace: "nowrap", cursor: "pointer", margin: 0, padding: "8px 16px", display: "inline-flex", alignItems: "center", gap: "8px" }}>
+                🖼️ Upload Cover
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleCoverImageUpload}
+                  className={styles.fileInput}
+                />
+              </label>
+            </div>
             
             {/* Series Management for Drafting */}
             <div className={styles.playlistSection} style={{ border: "1px solid hsl(var(--border))", padding: "1rem", borderRadius: "var(--radius-lg)", marginTop: "10px" }}>

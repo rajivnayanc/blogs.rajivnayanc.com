@@ -89,12 +89,11 @@ export async function DELETE(request: NextRequest) {
 
         const { data, content } = matter(rawContent);
 
-        const matchesSingle = data.seriesId === seriesId;
         const matchesMulti =
           Array.isArray(data.series) &&
           data.series.some((s: any) => s.id === seriesId);
 
-        if (matchesSingle || matchesMulti) {
+        if (matchesMulti) {
           if (action === "delete_blogs") {
             // Delete post file
             fs.unlinkSync(filePath);
@@ -107,15 +106,9 @@ export async function DELETE(request: NextRequest) {
             }
           } else {
             // Unlink series
-            if (matchesSingle) {
-              delete data.seriesId;
-              delete data.seriesOrder;
-            }
-            if (matchesMulti) {
-              data.series = data.series.filter((s: any) => s.id !== seriesId);
-              if (data.series.length === 0) {
-                delete data.series;
-              }
+            data.series = data.series.filter((s: any) => s.id !== seriesId);
+            if (data.series.length === 0) {
+              delete data.series;
             }
             // Save updated post content
             const updatedContent = matter.stringify(content, data);

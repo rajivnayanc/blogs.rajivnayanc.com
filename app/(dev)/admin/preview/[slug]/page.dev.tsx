@@ -32,19 +32,8 @@ export default async function DraftPreviewPage({ params }: PreviewPageProps) {
 
   const postSeriesList: { series: Series; posts: PostMeta[] }[] = [];
   
-  if (post.frontmatter.seriesId) {
-    const s = getSeriesById(post.frontmatter.seriesId);
-    if (s) {
-      postSeriesList.push({
-        series: s,
-        posts: getPostsInSeries(post.frontmatter.seriesId)
-      });
-    }
-  }
-  
   if (post.frontmatter.series) {
     post.frontmatter.series.forEach(item => {
-      if (item.id === post.frontmatter.seriesId) return; // avoid duplicate
       const s = getSeriesById(item.id);
       if (s) {
         postSeriesList.push({
