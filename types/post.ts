@@ -16,6 +16,7 @@ export interface Series {
   id: string;
   name: string;
   description: string;
+  image?: string; // Path relative to /public, e.g. "/images/series/system-design.jpg"
 }
 
 export interface Post {
